@@ -3,6 +3,7 @@
 	import Fuse from 'fuse.js';
 
 	import dayjs from '$lib/dayjs';
+	import { tierLabel } from '$lib/components/hf/tiers';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	dayjs.extend(relativeTime);
 
@@ -532,7 +533,7 @@
 			}}
 		>
 			{#if selectedModel}
-				{selectedModel.label}
+				{tierLabel(selectedModel.value) ?? selectedModel.label}
 			{:else}
 				{placeholder}
 			{/if}

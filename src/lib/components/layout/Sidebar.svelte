@@ -76,7 +76,10 @@
 	import HotkeyHint from '../common/HotkeyHint.svelte';
 
 	const BREAKPOINT = 768;
-	const DEFAULT_PINNED_ITEMS = ['notes', 'workspace'];
+	// Albert: curate the sidebar to essentials by default. Notes/Workspace
+	// (and other features) stay enabled and re-pinnable from Settings — they're
+	// just not pinned in the sidebar out of the box.
+	const DEFAULT_PINNED_ITEMS = [];
 
 	let scrollTop = 0;
 

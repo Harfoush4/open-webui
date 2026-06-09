@@ -3,6 +3,7 @@
 
 	import { getContext, tick } from 'svelte';
 	import dayjs from '$lib/dayjs';
+	import { tierLabel } from '$lib/components/hf/tiers';
 
 	import { mobile, settings, user } from '$lib/stores';
 	import { WEBUI_API_BASE_URL, WEBUI_BASE_URL } from '$lib/constants';
@@ -92,9 +93,14 @@
 
 			<div class="flex items-center">
 				<Tooltip content={`${item.label} (${item.value})`} placement="top-start">
-					<div class="line-clamp-1">
-						{item.label}
-					</div>
+					{#if tierLabel(item.value)}
+						<div class="flex flex-col leading-tight">
+							<div class="line-clamp-1">{tierLabel(item.value)}</div>
+							<div class="line-clamp-1 -mt-0.5 text-[0.65rem] font-normal text-gray-400 dark:text-gray-500">{item.label}</div>
+						</div>
+					{:else}
+						<div class="line-clamp-1">{item.label}</div>
+					{/if}
 				</Tooltip>
 			</div>
 

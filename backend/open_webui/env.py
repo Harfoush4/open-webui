@@ -769,8 +769,8 @@ if LICENSE_PUBLIC_KEY:
 ####################################
 
 WEBUI_NAME = os.getenv('WEBUI_NAME', 'Open WebUI')
-if WEBUI_NAME != 'Open WebUI':
-    WEBUI_NAME += ' (Open WebUI)'
+# Albert fork: keep the configured name as-is (drop upstream's " (Open WebUI)"
+# suffix). We own this experience — the product is "Albert".
 
 WEBUI_FAVICON_URL = 'https://openwebui.com/favicon.png'
 WEBUI_BUILD_HASH = os.getenv('WEBUI_BUILD_HASH', 'dev-build')
