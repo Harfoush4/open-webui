@@ -164,6 +164,11 @@ RUN set -e; \
     mkdir -p /app/backend/data; chown -R $UID:$GID /app/backend/data/; \
     rm -rf /var/lib/apt/lists/*;
 
+# Albert: proper document extraction. The USE_SLIM build ships only the basic
+# pypdf PDF loader; add PyMuPDF for far better PDF text extraction (CLAUDE.md
+# specifies PyMuPDF). DOCX (docx2txt) and XLSX (pandas/openpyxl) are already in.
+RUN uv pip install --system --no-cache-dir pymupdf
+
 # Install Ollama if requested
 RUN if [ "$USE_OLLAMA" = "true" ]; then \
     date +%s > /tmp/ollama_build_hash && \

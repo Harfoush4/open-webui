@@ -67,7 +67,7 @@
 			// Albert reveal: the spark sweeps a navy wipe across the screen,
 			// then we enter the app (only after a successful sign-in).
 			revealing = true;
-			await new Promise((r) => setTimeout(r, 850));
+			await new Promise((r) => setTimeout(r, 1300));
 
 			goto(redirectPath);
 			localStorage.removeItem('redirectPath');

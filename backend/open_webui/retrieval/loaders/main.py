@@ -538,11 +538,23 @@ class Loader:
             )
         else:
             if file_ext == 'pdf':
-                loader = PyPDFLoader(
-                    file_path,
-                    extract_images=self.kwargs.get('PDF_EXTRACT_IMAGES'),
-                    mode=self.kwargs.get('PDF_LOADER_MODE', 'page'),
-                )
+                # Albert: prefer PyMuPDF (far better text extraction than pypdf,
+                # esp. multi-column / table-heavy PDFs). Fall back to PyPDFLoader
+                # if PyMuPDF/fitz isn't installed.
+                try:
+                    import fitz  # noqa: F401  (PyMuPDF runtime dep)
+                    from langchain_community.document_loaders import PyMuPDFLoader
+
+                    loader = PyMuPDFLoader(
+                        file_path,
+                        extract_images=self.kwargs.get('PDF_EXTRACT_IMAGES'),
+                    )
+                except ImportError:
+                    loader = PyPDFLoader(
+                        file_path,
+                        extract_images=self.kwargs.get('PDF_EXTRACT_IMAGES'),
+                        mode=self.kwargs.get('PDF_LOADER_MODE', 'page'),
+                    )
             elif file_ext == 'csv':
                 loader = CSVLoader(file_path, encoding=self._detect_text_encoding(file_path))
             elif file_ext == 'rst':
