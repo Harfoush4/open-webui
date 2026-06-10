@@ -1484,9 +1484,23 @@ async def chat_memory_handler(request: Request, form_data: dict, extra_params: d
 
                 user_context += f'{doc_idx + 1}. [{created_at_date}] {doc}\n'
 
-    form_data['messages'] = add_or_update_system_message(
-        f'User Context:\n{user_context}\n', form_data['messages'], append=True
-    )
+    # Albert: inject remembered context into the latest USER message, not a
+    # system message. A request system message would REPLACE the grounding +
+    # persona baked into the albert-* Ollama models (Modelfile SYSTEM), so the
+    # default add_or_update_system_message here would silently break Phase 4/5
+    # grounding on every memory turn. Skip entirely when there's nothing to add.
+    if user_context.strip():
+        messages = form_data['messages']
+        note = f'[Things you remember about this user:\n{user_context}]\n\n'
+        for i in range(len(messages) - 1, -1, -1):
+            if messages[i].get('role') == 'user':
+                c = messages[i].get('content', '')
+                if isinstance(c, str):
+                    messages[i]['content'] = note + c
+                elif isinstance(c, list):
+                    messages[i]['content'] = [{'type': 'text', 'text': note}] + c
+                break
+        form_data['messages'] = messages
 
     return form_data
 
