@@ -44,6 +44,7 @@
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
 	import SettingsModal from '$lib/components/chat/SettingsModal.svelte';
 	import ChangelogModal from '$lib/components/ChangelogModal.svelte';
+	import AlbertWelcome from '$lib/components/hf/AlbertWelcome.svelte';
 	import AccountPending from '$lib/components/layout/Overlay/AccountPending.svelte';
 	import UpdateInfoToast from '$lib/components/layout/UpdateInfoToast.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
@@ -52,6 +53,7 @@
 	const i18n = getContext('i18n');
 
 	let loaded = false;
+	let showAlbertWelcome = false; // Albert first-login onboarding (memory/profile)
 	let DB = null;
 	let localDBChats = [];
 
@@ -316,9 +318,12 @@
 		};
 		setupKeyboardShortcuts();
 
-		// Albert "What's New": show to EVERY user (not just admins) once per
-		// version, so the whole office sees what Albert can do on first login.
-		if ($settings?.showChangelog ?? true) {
+		// Albert first-login onboarding (memory/profile) takes priority over the
+		// changelog: a brand-new user sees the welcome; the "What's New" shows on
+		// a later login. Already-onboarded users get the changelog as before.
+		if (!($settings?.albertWelcomeSeen ?? false)) {
+			showAlbertWelcome = true;
+		} else if ($settings?.showChangelog ?? true) {
 			showChangelog.set($settings?.version !== $config.version);
 		}
 
@@ -380,6 +385,7 @@
 
 <SettingsModal bind:show={$showSettings} />
 <ChangelogModal bind:show={$showChangelog} />
+<AlbertWelcome bind:show={showAlbertWelcome} />
 
 {#if version && compareVersion(version.latest, version.current) && ($settings?.showUpdateToast ?? true)}
 	<div class=" absolute bottom-8 right-8 z-50" in:fade={{ duration: 100 }}>

@@ -4,6 +4,7 @@
 	import { createEventDispatcher, onMount, getContext, tick } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import ManageModal from './Personalization/ManageModal.svelte';
+	import AlbertWelcome from '$lib/components/hf/AlbertWelcome.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	const dispatch = createEventDispatcher();
 
@@ -12,6 +13,7 @@
 	export let saveSettings: Function;
 
 	let showManageModal = false;
+	let showProfile = false; // Albert profile / onboarding (re-openable here)
 
 	// Addons
 	let enableMemory = false;
@@ -22,6 +24,7 @@
 </script>
 
 <ManageModal bind:show={showManageModal} />
+<AlbertWelcome bind:show={showProfile} />
 
 <form
 	id="tab-personalization"
@@ -75,7 +78,16 @@
 			</div> -->
 		</div>
 
-		<div class="mt-3 mb-1 ml-1">
+		<div class="mt-3 mb-1 ml-1 flex flex-wrap gap-2">
+			<button
+				type="button"
+				class=" px-3.5 py-1.5 font-medium hover:bg-black/5 dark:hover:bg-white/5 outline outline-1 outline-gray-300 dark:outline-gray-800 rounded-3xl"
+				on:click={() => {
+					showProfile = true;
+				}}
+			>
+				{$i18n.t('Set up my Albert profile')}
+			</button>
 			<button
 				type="button"
 				class=" px-3.5 py-1.5 font-medium hover:bg-black/5 dark:hover:bg-white/5 outline outline-1 outline-gray-300 dark:outline-gray-800 rounded-3xl"
