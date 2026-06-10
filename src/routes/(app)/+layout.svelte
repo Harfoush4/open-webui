@@ -316,7 +316,9 @@
 		};
 		setupKeyboardShortcuts();
 
-		if ($user?.role === 'admin' && ($settings?.showChangelog ?? true)) {
+		// Albert "What's New": show to EVERY user (not just admins) once per
+		// version, so the whole office sees what Albert can do on first login.
+		if ($settings?.showChangelog ?? true) {
 			showChangelog.set($settings?.version !== $config.version);
 		}
 
