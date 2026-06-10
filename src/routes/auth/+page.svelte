@@ -32,6 +32,7 @@
 	let loaded = false;
 
 	let mode = $config?.features.enable_ldap ? 'ldap' : 'signin';
+	let revealing = false; // Albert sign-in reveal animation
 
 	let form = null;
 
@@ -62,6 +63,11 @@
 			if (!redirectPath) {
 				redirectPath = $page.url.searchParams.get('redirect') || '/';
 			}
+
+			// Albert reveal: the spark sweeps a navy wipe across the screen,
+			// then we enter the app (only after a successful sign-in).
+			revealing = true;
+			await new Promise((r) => setTimeout(r, 850));
 
 			goto(redirectPath);
 			localStorage.removeItem('redirectPath');
@@ -230,7 +236,26 @@
 />
 
 <div class="w-full h-screen max-h-[100dvh] text-white relative" id="auth-page">
-	<div class="w-full h-full absolute top-0 left-0 bg-white dark:bg-black"></div>
+	<!-- Albert / HF Group branded auth backdrop: the HF navy gradient. -->
+	<div
+		class="w-full h-full absolute top-0 left-0"
+		style="background: linear-gradient(140deg, #2D2E80 0%, #1A1B58 100%);"
+	></div>
+
+	<!-- Albert product mark, top-left corner (the reveal grows from here). -->
+	<img
+		id="albert-corner-mark"
+		src="{WEBUI_BASE_URL}/static/albert-white.png"
+		class="fixed top-6 left-8 size-16 z-50"
+		alt="Albert"
+	/>
+
+	<!-- Sign-in reveal: the spark sweeps a navy wipe to open Albert. -->
+	{#if revealing}
+		<div class="albert-reveal" aria-hidden="true">
+			<img src="{WEBUI_BASE_URL}/static/albert-white.png" alt="" />
+		</div>
+	{/if}
 
 	<div class="w-full absolute top-0 left-0 right-0 h-8 drag-region" />
 
@@ -257,17 +282,19 @@
 				{:else}
 					<div class="my-auto flex flex-col justify-center items-center">
 						<div class=" sm:max-w-md my-auto pb-10 w-full dark:text-gray-100">
-							{#if $config?.metadata?.auth_logo_position === 'center'}
-								<div class="flex justify-center mb-6">
-									<img
-										id="logo"
-										crossorigin="anonymous"
-										src="{WEBUI_BASE_URL}/static/favicon.png"
-										class="size-24 rounded-full"
-										alt="{$WEBUI_NAME} logo"
-									/>
+							<!-- HF Group mark (hero) + tagline. -->
+							<div class="flex flex-col justify-center items-center gap-3 mb-8">
+								<img
+									id="hf-logo"
+									crossorigin="anonymous"
+									src="{WEBUI_BASE_URL}/static/hf-mark.png"
+									class="h-20 w-auto"
+									alt="HF Group"
+								/>
+								<div class="text-xs font-medium tracking-wide text-white/70">
+									A Company Well Connected
 								</div>
-							{/if}
+							</div>
 							<form
 								class=" flex flex-col justify-center"
 								on:submit={(e) => {
