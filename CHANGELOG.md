@@ -2,7 +2,13 @@
 
 What's new in Albert — HF Group's private AI assistant.
 
-## [1.0.0] - 2026-06-10
+## [0.2.0] - 2026-06-11
+
+### Added
+
+- Your email & calendar: on the **Low** and **Medium** tiers, ask Albert to summarise your inbox, search past emails, check your calendar, and draft replies — Albert reads your own mailbox and prepares drafts, and you review and send them yourself from Outlook. It can't send, delete, or change anything on its own.
+
+## [0.1.0] - 2026-06-10
 
 ### Added
 
@@ -12,11 +18,8 @@ What's new in Albert — HF Group's private AI assistant.
 - File uploads: attach a PDF, Word document, or spreadsheet and ask Albert about what's in it.
 - Everyday help: drafting and polishing emails, summarising documents, writing and explaining code, translating, brainstorming, and general know-how.
 
-### Improved
-
-- A fresh HF-branded experience: a refined sign-in and a calmer look in both light and dark mode.
-- Streaming replies: Albert's answers appear as they're written, so you're never left waiting on a blank screen.
 
 ### Good to know
 
 - Scope: Albert helps with general work, not internal HF facts (people, policies, schedules, customers). If you ask about those, it'll say so plainly and offer what it can do instead.
+- Your mailbox: Albert only ever reads **your own** email and calendar, and only drafts (never sends) on your behalf — so you're always the one who actually sends.
