@@ -495,7 +495,10 @@
 				/>
 			</span>
 		{:else}
-			<p dir="auto">
+			<!-- albert-writing: inline streaming caret on the last paragraph while
+			     Albert is still writing (theme/overrides.css). ::after on a <p> is
+			     inline at the end of the text, so it flows with the stream. -->
+			<p dir="auto" class:albert-writing={!done && tokenIdx === displayTokens.length - 1}>
 				<MarkdownInlineTokens
 					id={`${id}-${tokenIdx}-p`}
 					tokens={token.tokens ?? []}

@@ -32,7 +32,24 @@
 	let loaded = false;
 
 	let mode = $config?.features.enable_ldap ? 'ldap' : 'signin';
-	let revealing = false; // Albert sign-in reveal animation
+	let revealing = false; // Albert sign-in reveal animation (the quick cover)
+	let redirectTo = '/';
+	let entered = false;
+
+	// Called when the cover sweep finishes (or via the safety-net timeout). We
+	// store a flag so the app side plays the slow wipe-off, then enter the app
+	// straight away — entry is NOT gated on the long animation. Reacting to
+	// animationend (not a hardcoded delay) means changing the CSS duration can
+	// never desync the two again.
+	const enterApp = (e?: AnimationEvent) => {
+		// Ignore the mark's animation bubbling up — only the panel's own sweep.
+		if (e && e.animationName !== 'albert-reveal-sweep') return;
+		if (entered) return;
+		entered = true;
+		sessionStorage.setItem('albert-reveal', '1'); // app side reads + plays the wipe
+		localStorage.removeItem('redirectPath');
+		goto(redirectTo);
+	};
 
 	let form = null;
 
@@ -64,13 +81,18 @@
 				redirectPath = $page.url.searchParams.get('redirect') || '/';
 			}
 
-			// Albert reveal: the spark sweeps a navy wipe across the screen,
-			// then we enter the app (only after a successful sign-in).
-			revealing = true;
-			await new Promise((r) => setTimeout(r, 1300));
-
-			goto(redirectPath);
-			localStorage.removeItem('redirectPath');
+			// Albert reveal: a quick navy panel sweeps in to cover the screen; on
+			// its animationend we enter the app immediately (the slow wipe-off then
+			// plays on the app side, so it never delays you). reduced-motion skips
+			// straight in.
+			redirectTo = redirectPath;
+			const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+			if (reduceMotion) {
+				enterApp();
+			} else {
+				revealing = true; // enterApp() fires on the cover's animationend
+				setTimeout(enterApp, 4000); // safety net if animationend never fires
+			}
 		}
 	};
 
@@ -250,9 +272,10 @@
 		alt="Albert"
 	/>
 
-	<!-- Sign-in reveal: the spark sweeps a navy wipe to open Albert. -->
+	<!-- Sign-in reveal: a quick navy cover sweeps in; we enter the app on its
+	     animationend and the slow wipe-off plays on the app side. -->
 	{#if revealing}
-		<div class="albert-reveal" aria-hidden="true">
+		<div class="albert-reveal" aria-hidden="true" on:animationend={enterApp}>
 			<img src="{WEBUI_BASE_URL}/static/albert-white.png" alt="" />
 		</div>
 	{/if}

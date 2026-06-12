@@ -126,6 +126,10 @@
 	export let history;
 	export let taskIds = null;
 
+	// Drives the send-button "fly + glow pulse" flourish (theme/overrides.css
+	// §7.1 #4). Set on submit; cleared when the pulse animation ends.
+	let justSent = false;
+
 	$: isActive =
 		(taskIds && taskIds.length > 0) ||
 		(history.currentId && history.messages[history.currentId]?.done != true) ||
@@ -1259,6 +1263,7 @@
 						class="w-full flex flex-col gap-1.5 {recording ? 'hidden' : ''}"
 						on:submit|preventDefault={() => {
 							// check if selectedModels support image input
+							justSent = true; // trigger the send-button flourish
 							dispatch('submit', prompt);
 						}}
 					>
@@ -1295,6 +1300,10 @@
 
 						<div
 							id="message-input-container"
+							class:albert-sent={justSent}
+							on:animationend={(e) => {
+								if (e.animationName === 'albert-send-pulse') justSent = false;
+							}}
 							class="flex-1 flex flex-col relative w-full shadow-lg rounded-3xl border {$temporaryChatEnabled
 								? 'border-dashed border-gray-100 dark:border-gray-800 hover:border-gray-200 focus-within:border-gray-200 hover:dark:border-gray-700 focus-within:dark:border-gray-700'
 								: ' border-gray-100/30 dark:border-gray-850/30 hover:border-gray-200 focus-within:border-gray-100 hover:dark:border-gray-800 focus-within:dark:border-gray-800'}  transition px-1 bg-white/5 dark:bg-gray-500/5 backdrop-blur-sm dark:text-gray-100"
@@ -1558,6 +1567,7 @@
 																if (enterPressed) {
 																	e.preventDefault();
 																	if (prompt !== '' || files.length > 0) {
+																		justSent = true; // send-button flourish (Enter path)
 																		dispatch('submit', prompt);
 																	}
 																}
