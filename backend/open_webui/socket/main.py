@@ -1005,6 +1005,18 @@ async def get_event_emitter(request_info, update_db=True):
                         },
                     )
 
+            elif event_type == 'chat:message:albert_filters':
+                # Albert (V2-A): persist the compliance-audit filter-panel payload
+                # on the message so it survives completion/reload and renders
+                # reliably (AuditFilters.svelte). Mirrors embeds/files/sources.
+                await Chats.upsert_message_to_chat_by_id_and_message_id(
+                    request_info['chat_id'],
+                    request_info['message_id'],
+                    {
+                        'albertFilters': event_data.get('data', {}),
+                    },
+                )
+
     if 'user_id' in request_info and 'chat_id' in request_info and 'message_id' in request_info:
         return __event_emitter__
     else:

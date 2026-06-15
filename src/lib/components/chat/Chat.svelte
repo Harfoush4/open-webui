@@ -543,6 +543,14 @@
 					if (autoScroll) {
 						scrollToBottom('smooth');
 					}
+				} else if (type === 'chat:message:albert_filters') {
+					// Albert (V2-A): the compliance-audit tool asks us to show its
+					// inline pre-run filter panel for the resolved site.
+					message.albertFilters = data;
+
+					if (autoScroll) {
+						scrollToBottom('smooth');
+					}
 				} else if (type === 'chat:outlet') {
 					// Outlet filter ran on backend — sync in-memory state
 					const outletMessages = data.messages ?? [];

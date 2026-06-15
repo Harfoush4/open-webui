@@ -58,6 +58,7 @@
 	import { KokoroWorker } from '$lib/workers/KokoroWorker';
 	import FileItem from '$lib/components/common/FileItem.svelte';
 	import FollowUps from './ResponseMessage/FollowUps.svelte';
+	import AuditFilters from '$lib/components/hf/AuditFilters.svelte';
 	import { fade } from 'svelte/transition';
 	import { flyAndScale } from '$lib/utils/transitions';
 	import RegenerateMenu from './ResponseMessage/RegenerateMenu.svelte';
@@ -1495,6 +1496,14 @@
 									...e.detail
 								});
 							}}
+						/>
+					{/if}
+
+					{#if message?.albertFilters?.site && message.done && !readOnly}
+						<AuditFilters
+							site={message.albertFilters.site}
+							clientRef={message.albertFilters.client_ref ?? ''}
+							onRun={(text) => submitMessage(message?.id, text)}
 						/>
 					{/if}
 
