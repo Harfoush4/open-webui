@@ -2581,9 +2581,16 @@ async def process_chat_payload(request, form_data, user, metadata, model):
                 form_data = await chat_memory_handler(request, form_data, extra_params, user)
 
         if 'web_search' in features and features['web_search']:
-            # Skip forced RAG web search when native FC is enabled - model can use web_search tool
-            if metadata.get('params', {}).get('function_calling') != 'native':
-                form_data = await chat_web_search_handler(request, form_data, extra_params, user)
+            # Albert fork (V2-C): ALWAYS run the conditional RAG web-search handler,
+            # even for native-FC models. Upstream skips it for native FC on the
+            # assumption the model will call a `web_search` TOOL instead — but this
+            # build ships no such tool, and our tiers run native FC for the
+            # audit/email tools, so the upstream guard would make the per-chat Web
+            # toggle a silent no-op on Low/Medium. The query-generation step still
+            # gates whether a search actually runs (it returns {"queries":[]} when
+            # none is needed), so this stays "search only when needed" rather than
+            # "search every turn". See docs/runbooks/web-search.md.
+            form_data = await chat_web_search_handler(request, form_data, extra_params, user)
 
         if 'image_generation' in features and features['image_generation']:
             # Skip forced image generation when native FC is enabled - model can use generate_image tool
